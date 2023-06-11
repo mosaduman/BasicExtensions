@@ -1,0 +1,10 @@
+C:\Dökümanlar\Musa\BasicExtensions\obj\Debug\BasicExtensions.csproj.AssemblyReference.cache
+C:\Dökümanlar\Musa\BasicExtensions\obj\Debug\BasicExtensions.csproj.CoreCompileInputs.cache
+C:\Dökümanlar\Musa\BasicExtensions\bin\Debug\BasicExtensions.dll
+C:\Dökümanlar\Musa\BasicExtensions\bin\Debug\BasicExtensions.pdb
+C:\Dökümanlar\Musa\BasicExtensions\bin\Debug\Newtonsoft.Json.dll
+C:\Dökümanlar\Musa\BasicExtensions\bin\Debug\NLog.dll
+C:\Dökümanlar\Musa\BasicExtensions\bin\Debug\NLog.xml
+C:\Dökümanlar\Musa\BasicExtensions\obj\Debug\BasicExtensions.csproj.CopyComplete
+C:\Dökümanlar\Musa\BasicExtensions\obj\Debug\BasicExtensions.dll
+C:\Dökümanlar\Musa\BasicExtensions\obj\Debug\BasicExtensions.pdb
