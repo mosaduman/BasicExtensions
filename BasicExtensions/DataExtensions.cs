@@ -1,9 +1,3 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: BasicExtensions.DataExtensions
-// Assembly: BasicExtensions, Version=22.3.29.850, Culture=neutral, PublicKeyToken=null
-// MVID: 79FB4BFA-4B02-474B-868E-39507878FD3D
-// Assembly location: C:\Users\Musa Duman\.nuget\packages\basic.extensions\22.3.29.850\lib\net5.0\BasicExtensions.dll
-
 using BasicExtensions.Models;
 using Newtonsoft.Json;
 using System;
@@ -16,84 +10,84 @@ using System.Xml.Serialization;
 
 namespace BasicExtensions
 {
-  public static class DataExtensions
-  {
-    public static string ToJson<T>(this T entity) => JsonConvert.SerializeObject((object) entity);
-
-    public static T ToModelFromJson<T>(this string entity) => JsonConvert.DeserializeObject<T>(entity);
-
-    public static string ToXml<T>(this T entity)
+    public static class DataExtensions
     {
-      using (StringWriter output = new StringWriter())
-      {
-        using (XmlWriter xmlWriter = XmlWriter.Create((TextWriter) output))
+        public static string ToJson<T>(this T entity) => JsonConvert.SerializeObject((object)entity);
+
+        public static T ToModelFromJson<T>(this string entity) => JsonConvert.DeserializeObject<T>(entity);
+
+        public static string ToXml<T>(this T entity)
         {
-          new XmlSerializer(typeof (T)).Serialize(xmlWriter, (object) entity);
-          return output.ToString();
+            using (StringWriter output = new StringWriter())
+            {
+                using (XmlWriter xmlWriter = XmlWriter.Create((TextWriter)output))
+                {
+                    new XmlSerializer(typeof(T)).Serialize(xmlWriter, (object)entity);
+                    return output.ToString();
+                }
+            }
         }
-      }
-    }
 
-    public static T ToModelFromXml<T>(this string data)
-    {
-      if (string.IsNullOrWhiteSpace(data))
-        return default (T);
-      using (StringReader stringReader = new StringReader(data))
-        return (T) new XmlSerializer(typeof (T)).Deserialize((TextReader) stringReader);
-    }
-
-    private static void Map<TSource, TDestination>(this TSource source, TDestination destination)
-      where TSource : class, new()
-      where TDestination : class, new()
-    {
-      if ((object) source == null || (object) destination == null)
-        return;
-      List<PropertyInfo> list1 = ((IEnumerable<PropertyInfo>) source.GetType().GetProperties()).ToList<PropertyInfo>();
-      List<PropertyInfo> list2 = ((IEnumerable<PropertyInfo>) destination.GetType().GetProperties()).ToList<PropertyInfo>();
-      foreach (PropertyInfo propertyInfo1 in list1)
-      {
-        PropertyInfo sourceProperty = propertyInfo1;
-        PropertyInfo propertyInfo2 = list2.Find((Predicate<PropertyInfo>) (item => item.Name.ToLower() == sourceProperty.Name.ToLower()));
-        if (propertyInfo2 != (PropertyInfo) null)
+        public static T ToModelFromXml<T>(this string data)
         {
-          try
-          {
-            propertyInfo2.SetValue((object) destination, sourceProperty.GetValue((object) source, (object[]) null), (object[]) null);
-          }
-          catch (Exception ex)
-          {
-          }
+            if (string.IsNullOrWhiteSpace(data))
+                return default(T);
+            using (StringReader stringReader = new StringReader(data))
+                return (T)new XmlSerializer(typeof(T)).Deserialize((TextReader)stringReader);
         }
-      }
+
+        private static void Map<TSource, TDestination>(this TSource source, TDestination destination)
+          where TSource : class, new()
+          where TDestination : class, new()
+        {
+            if ((object)source == null || (object)destination == null)
+                return;
+            List<PropertyInfo> list1 = ((IEnumerable<PropertyInfo>)source.GetType().GetProperties()).ToList<PropertyInfo>();
+            List<PropertyInfo> list2 = ((IEnumerable<PropertyInfo>)destination.GetType().GetProperties()).ToList<PropertyInfo>();
+            foreach (PropertyInfo propertyInfo1 in list1)
+            {
+                PropertyInfo sourceProperty = propertyInfo1;
+                PropertyInfo propertyInfo2 = list2.Find((Predicate<PropertyInfo>)(item => item.Name.ToLower() == sourceProperty.Name.ToLower()));
+                if (propertyInfo2 != (PropertyInfo)null)
+                {
+                    try
+                    {
+                        propertyInfo2.SetValue((object)destination, sourceProperty.GetValue((object)source, (object[])null), (object[])null);
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }
+            }
+        }
+
+        public static TDestination Map<TDestination>(this object source) where TDestination : class, new()
+        {
+            TDestination destination = new TDestination();
+            source.Map<object, TDestination>(destination);
+            return destination;
+        }
+
+        public static TDestination MapJson<TDestination>(this object source) => source.ToJson<object>().ToModelFromJson<TDestination>();
+
+        public static T ToEnum<T>(this string val) where T : Enum
+        {
+            try
+            {
+                return (T)Enum.Parse(typeof(T), val);
+            }
+            catch (Exception ex)
+            {
+                return default(T);
+            }
+        }
+
+        public static List<ListItem> ToList<T>() where T : Enum => DataExtensions.EnumToList(typeof(T));
+
+        public static List<ListItem> EnumToList(Type type) => Enum.GetValues(type).Cast<int>().Select<int, ListItem>((Func<int, ListItem>)(c => new ListItem()
+        {
+            Id = c.ToString(),
+            Value = Enum.GetName(type, (object)c)
+        })).ToList<ListItem>();
     }
-
-    public static TDestination Map<TDestination>(this object source) where TDestination : class, new()
-    {
-      TDestination destination = new TDestination();
-      source.Map<object, TDestination>(destination);
-      return destination;
-    }
-
-    public static TDestination MapJson<TDestination>(this object source) => source.ToJson<object>().ToModelFromJson<TDestination>();
-
-    public static T ToEnum<T>(this string val) where T : Enum
-    {
-      try
-      {
-        return (T) Enum.Parse(typeof (T), val);
-      }
-      catch (Exception ex)
-      {
-        return default (T);
-      }
-    }
-
-    public static List<ListItem> ToList<T>() where T : Enum => DataExtensions.EnumToList(typeof (T));
-
-    public static List<ListItem> EnumToList(Type type) => Enum.GetValues(type).Cast<int>().Select<int, ListItem>((Func<int, ListItem>) (c => new ListItem()
-    {
-      Id = c.ToString(),
-      Value = Enum.GetName(type, (object) c)
-    })).ToList<ListItem>();
-  }
 }
