@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 
 namespace BasicExtensions
@@ -6,87 +7,62 @@ namespace BasicExtensions
     {
         private Thread[] _threads;
 
-        public int ThreadCount { get; set; }
+        public int ThreadCount { get; private set; }
 
         public ThreadExtensions(int threadCount)
         {
             this.ThreadCount = threadCount;
-            this.CreateThread();
-        }
-
-        public void WaitDone()
-        {
-            do
-                ;
-            while (!this.AreAllThreadDone());
+            this._threads = new Thread[threadCount];
         }
 
         public void Run(ThreadStart start)
         {
-            int referanceThreadIndex = this.FindNullReferanceThreadIndex();
-            this._threads[referanceThreadIndex] = new Thread(start);
-            this._threads[referanceThreadIndex].Start();
+            int threadIndex = FindAvailableThreadIndex();
+            if (threadIndex == -1)
+            {
+                throw new InvalidOperationException("No available threads to run the task.");
+            }
+
+            _threads[threadIndex] = new Thread(start);
+            _threads[threadIndex].Start();
         }
 
-        private void CreateThread()
+        public void WaitDone()
         {
-            if (this._threads == null)
+            foreach (var thread in _threads)
             {
-                this._threads = new Thread[this.ThreadCount];
-                for (int index = 0; index < this.ThreadCount; ++index)
-                    this._threads[index] = (Thread)null;
-            }
-            else if (this._threads.Length > this.ThreadCount)
-            {
-                Thread[] threadArray = new Thread[this.ThreadCount];
-                for (int index = 0; index < this.ThreadCount; ++index)
-                    threadArray[index] = this._threads[index];
-                this._threads = threadArray;
-            }
-            else
-            {
-                if (this._threads.Length >= this.ThreadCount)
-                    return;
-                Thread[] threadArray = new Thread[this.ThreadCount];
-                for (int index = 0; index < this._threads.Length; ++index)
-                    threadArray[index] = this._threads[index];
-                for (int length = this._threads.Length; length < this.ThreadCount; ++length)
-                    threadArray[length] = this._threads[length];
-                this._threads = threadArray;
+                thread?.Join(); // Tüm aktif threadlerin tamamlanmasını bekler
             }
         }
 
-        private int FindNullReferanceThreadIndex()
+        private int FindAvailableThreadIndex()
         {
-        label_0:
-            for (int referanceThreadIndex = 0; referanceThreadIndex < this.ThreadCount; ++referanceThreadIndex)
+            for (int i = 0; i < _threads.Length; i++)
             {
-                if (this._threads[referanceThreadIndex] == null)
-                    return referanceThreadIndex;
-                if (!this._threads[referanceThreadIndex].IsAlive)
+                if (_threads[i] == null || !_threads[i].IsAlive)
                 {
-                    this._threads[referanceThreadIndex].Join();
-                    this._threads[referanceThreadIndex] = (Thread)null;
-                    return referanceThreadIndex;
+                    if (_threads[i] != null && !_threads[i].IsAlive)
+                    {
+                        _threads[i].Join(); // Sonlanan threadlerin kaynaklarını serbest bırakmak için Join kullanılır
+                        _threads[i] = null;
+                    }
+                    return i;
                 }
             }
-            goto label_0;
+
+            return -1; // Uygun thread yok
         }
 
-        private bool AreAllThreadDone()
+        private bool AreAllThreadsDone()
         {
-            bool flag = true;
-            for (int index = 0; index < this.ThreadCount; ++index)
+            foreach (var thread in _threads)
             {
-                if (this._threads[index] != null)
+                if (thread != null && thread.IsAlive)
                 {
-                    if (this._threads[index].IsAlive)
-                        flag = false;
-                    else
-                        this._threads[index] = (Thread)null;
+                    return false;
                 }
             }
-            return flag;
+            return true;
         }
     }
 }
