@@ -1,7 +1,6 @@
 using BasicExtensions.Attribute;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -17,148 +16,79 @@ namespace BasicExtensions
 
         public static string ToCustomSubstring(this string data, int size = 11) => (data ?? "").Length > size ? data.Substring(0, size) : data;
 
-        public static bool IsGuid(this string value) => Guid.TryParse(value, out Guid _);
+        public static bool IsGuid(this string value) => Guid.TryParse(value, out _);
 
         public static string CreateId(
-          this string prefix,
-          string id,
-          int length = 16,
-          bool isYear = true,
-          bool isMonth = false,
-          bool isDay = false)
+            this string prefix,
+            string id,
+            int length = 16,
+            bool isYear = true,
+            bool isMonth = false,
+            bool isDay = false)
         {
-            string[] strArray = new string[5]
-            {
-        prefix,
-        null,
-        null,
-        null,
-        null
-            };
-            int num;
-            string str1;
-            if (!isYear)
-            {
-                str1 = "";
-            }
-            else
-            {
-                num = DateTime.Now.Year;
-                str1 = num.ToString();
-            }
-            strArray[1] = str1;
-            string str2;
-            if (!isMonth)
-            {
-                str2 = "";
-            }
-            else
-            {
-                num = DateTime.Now.Month;
-                str2 = num.ToString().PadLeft();
-            }
-            strArray[2] = str2;
-            string str3;
-            if (!isDay)
-            {
-                str3 = "";
-            }
-            else
-            {
-                num = DateTime.Now.Day;
-                str3 = num.ToString().PadLeft();
-            }
-            strArray[3] = str3;
-            strArray[4] = StringExtensions.PadLeft(id, count: (length - (prefix.Length + id.Length + (isYear ? 4 : 0) + (isMonth ? 2 : 0) + (isDay ? 2 : 0)) + id.Length));
-            return string.Concat(strArray);
+            var dateComponents = new List<string> { prefix };
+
+            if (isYear)
+                dateComponents.Add(DateTime.Now.Year.ToString());
+            if (isMonth)
+                dateComponents.Add(DateTime.Now.Month.ToString("D2"));
+            if (isDay)
+                dateComponents.Add(DateTime.Now.Day.ToString("D2"));
+
+            int remainingLength = length - (dateComponents.Sum(x => x.Length) + id.Length);
+            dateComponents.Add(id.PadLeft(remainingLength, '0'));
+
+            return string.Concat(dateComponents);
         }
 
         public static string ToOnlyNumericValue(this string value) => Regex.Replace(value, "[^0-9]", "");
 
         public static bool IsValidPassword(
-          this string password,
-          int minCount = 8,
-          int maxCount = 32,
-          bool isUpper = true,
-          bool isLower = true,
-          bool isDigit = false,
-          bool isSpecial = false)
-        {
-            return password.Length >= minCount && password.Length <= maxCount && (!isUpper || password.AnyUpperChar()) && (!isLower || password.AnyLowerChar()) && (!isDigit || password.AnyDigitChar()) && (!isSpecial || password.AnySpecialChar());
-        }
+            this string password,
+            int minCount = 8,
+            int maxCount = 32,
+            bool isUpper = true,
+            bool isLower = true,
+            bool isDigit = false,
+            bool isSpecial = false) =>
+            password.Length >= minCount && password.Length <= maxCount &&
+            (!isUpper || password.Any(char.IsUpper)) &&
+            (!isLower || password.Any(char.IsLower)) &&
+            (!isDigit || password.Any(char.IsDigit)) &&
+            (!isSpecial || password.Any(char.IsPunctuation));
 
-        public static bool AnyUpperChar(this string value) => ((IEnumerable<char>)value.ToArray<char>()).Any<char>((Func<char, bool>)(s => char.IsUpper(s)));
-
-        public static bool AnyLowerChar(this string value) => ((IEnumerable<char>)value.ToArray<char>()).Any<char>((Func<char, bool>)(s => char.IsLower(s)));
-
-        public static bool AnyDigitChar(this string value) => ((IEnumerable<char>)value.ToArray<char>()).Any<char>((Func<char, bool>)(s => char.IsDigit(s)));
-
-        public static bool AnySpecialChar(this string value) => ((IEnumerable<char>)value.ToArray<char>()).Any<char>((Func<char, bool>)(s => char.IsPunctuation(s)));
-
-        public static bool IsValidEmail(this string email) => !string.IsNullOrWhiteSpace(email) && new Regex("^(?!\\.)(\"([^\"\\r\\\\]|\\\\[\"\\r\\\\])*\"|([-a-z0-9!#$%&'*+/=?^_`{|}~]|(?<!\\.)\\.)*)(?<!\\.)@[a-z0-9][\\w\\.-]*[a-z0-9]\\.[a-z][a-z\\.]*[a-z]$", RegexOptions.IgnoreCase).IsMatch(email);
+        public static bool IsValidEmail(this string email) =>
+            !string.IsNullOrWhiteSpace(email) &&
+            Regex.IsMatch(email, "^(?!\\.)(\"([^\"\\r\\\\]|\\\\[\"\\r\\\\])*\"|([-a-z0-9!#$%&'*+/=?^_`{|}~]|(?<!\\.)\\.)*)(?<!\\.)@[a-z0-9][\\w\\.-]*[a-z0-9]\\.[a-z][a-z\\.]*[a-z]$", RegexOptions.IgnoreCase);
 
         public static bool IsValidTckn(this string tckn)
         {
-            if (string.IsNullOrWhiteSpace(tckn) || !tckn.All<char>(new Func<char, bool>(char.IsDigit)) || tckn.Length != 11 || tckn.StartsWith("0"))
+            if (tckn.Length != 11 || !tckn.All(char.IsDigit) || tckn.StartsWith("0"))
                 return false;
-            int num1 = Convert.ToInt32(tckn[0].ToString()) + Convert.ToInt32(tckn[2].ToString()) + Convert.ToInt32(tckn[4].ToString()) + Convert.ToInt32(tckn[6].ToString()) + Convert.ToInt32(tckn[8].ToString());
-            int num2 = Convert.ToInt32(tckn[1].ToString()) + Convert.ToInt32(tckn[3].ToString()) + Convert.ToInt32(tckn[5].ToString()) + Convert.ToInt32(tckn[7].ToString());
-            int num3 = (num1 * 7 - num2) % 10;
-            int num4 = (num1 + num2 + Convert.ToInt32(tckn[9].ToString())) % 10;
-            int num5 = num3;
-            char ch = tckn[9];
-            int int32_1 = Convert.ToInt32(ch.ToString());
-            if (num5 != int32_1)
-                return false;
-            int num6 = num4;
-            ch = tckn[10];
-            int int32_2 = Convert.ToInt32(ch.ToString());
-            return num6 == int32_2;
+
+            int sum1 = tckn[0] + tckn[2] + tckn[4] + tckn[6] + tckn[8];
+            int sum2 = tckn[1] + tckn[3] + tckn[5] + tckn[7];
+            int digit10 = (sum1 * 7 - sum2) % 10;
+            int digit11 = (sum1 + sum2 + tckn[9]) % 10;
+
+            return digit10 == tckn[9] && digit11 == tckn[10];
         }
 
         public static bool IsValidVkn(this string vkn)
         {
-            if (string.IsNullOrWhiteSpace(vkn) || !vkn.All<char>(new Func<char, bool>(char.IsDigit)) || vkn.Length != 10)
+            if (vkn.Length != 10 || !vkn.All(char.IsDigit))
                 return false;
-            int num1 = (Convert.ToInt32(vkn[0].ToString()) + 9) % 10;
-            int num2 = (Convert.ToInt32(vkn[1].ToString()) + 8) % 10;
-            int num3 = (Convert.ToInt32(vkn[2].ToString()) + 7) % 10;
-            int num4 = (Convert.ToInt32(vkn[3].ToString()) + 6) % 10;
-            int num5 = (Convert.ToInt32(vkn[4].ToString()) + 5) % 10;
-            int num6 = (Convert.ToInt32(vkn[5].ToString()) + 4) % 10;
-            int num7 = (Convert.ToInt32(vkn[6].ToString()) + 3) % 10;
-            int num8 = (Convert.ToInt32(vkn[7].ToString()) + 2) % 10;
-            int num9 = (Convert.ToInt32(vkn[8].ToString()) + 1) % 10;
-            int int32 = Convert.ToInt32(vkn[9].ToString());
-            int num10 = num1 * 512 % 9;
-            int num11 = num2 * 256 % 9;
-            int num12 = num3 * 128 % 9;
-            int num13 = num4 * 64 % 9;
-            int num14 = num5 * 32 % 9;
-            int num15 = num6 * 16 % 9;
-            int num16 = num7 * 8 % 9;
-            int num17 = num8 * 4 % 9;
-            int num18 = num9 * 2 % 9;
-            if (num1 != 0 && num10 == 0)
-                num10 = 9;
-            if (num2 != 0 && num11 == 0)
-                num11 = 9;
-            if (num3 != 0 && num12 == 0)
-                num12 = 9;
-            if (num4 != 0 && num13 == 0)
-                num13 = 9;
-            if (num5 != 0 && num14 == 0)
-                num14 = 9;
-            if (num6 != 0 && num15 == 0)
-                num15 = 9;
-            if (num7 != 0 && num16 == 0)
-                num16 = 9;
-            if (num8 != 0 && num17 == 0)
-                num17 = 9;
-            if (num9 != 0 && num18 == 0)
-                num18 = 9;
-            int num19 = num10 + num11 + num12 + num13 + num14 + num15 + num16 + num17 + num18;
-            return (num19 % 10 != 0 ? 10 - num19 % 10 : 0) == int32;
+
+            int sum = Enumerable.Range(0, 9)
+                .Select(i =>
+                {
+                    int val = (vkn[i] - '0' + (9 - i)) % 10;
+                    return val == 0 ? 9 : val;
+                })
+                .Sum();
+
+            int controlDigit = (10 - sum % 10) % 10;
+            return controlDigit == (vkn[9] - '0');
         }
 
         public static bool IsValidVknOrTckn(this string kno) => kno.IsValidTckn() || kno.IsValidVkn();
@@ -169,119 +99,113 @@ namespace BasicExtensions
         {
             if (string.IsNullOrWhiteSpace(phone))
                 return "";
-            string onlyNumericValue = phone.ToOnlyNumericValue();
-            if (onlyNumericValue.Length == 10)
-                return onlyNumericValue;
-            if (onlyNumericValue.StartsWith("90") && onlyNumericValue.Length == 12)
-                return onlyNumericValue.Substring(2, onlyNumericValue.Length - 2);
-            return onlyNumericValue.StartsWith("0") && onlyNumericValue.Length == 11 ? onlyNumericValue.Substring(1, onlyNumericValue.Length - 1) : "";
+
+            string numericValue = phone.ToOnlyNumericValue();
+
+            return numericValue.Length switch
+            {
+                10 => numericValue,
+                12 when numericValue.StartsWith("90") => numericValue.Substring(2),
+                11 when numericValue.StartsWith("0") => numericValue.Substring(1),
+                _ => ""
+            };
         }
 
         public static string ToPhoneFormat(this string phone, string format = "5554443322")
         {
             if (!phone.IsValidPhoneFormat())
                 return "";
-            string phoneFormatLength10 = phone.ToPhoneFormatLength10();
-            switch (format)
+
+            string formattedPhone = phone.ToPhoneFormatLength10();
+
+            return format switch
             {
-                case "+90 (555) 444 33 33":
-                    return "+90 (" + phoneFormatLength10.Substring(0, 3) + ") " + phoneFormatLength10.Substring(3, 3) + " " + phoneFormatLength10.Substring(6, 2) + " " + phoneFormatLength10.Substring(8, 2);
-                case "+90 (555) 444 3333":
-                    return "+90 (" + phoneFormatLength10.Substring(0, 3) + ") " + phoneFormatLength10.Substring(3, 3) + " " + phoneFormatLength10.Substring(6, 4);
-                case "0 (555) 444 33 22":
-                    return "0 (" + phoneFormatLength10.Substring(0, 3) + ") " + phoneFormatLength10.Substring(3, 3) + " " + phoneFormatLength10.Substring(6, 2) + " " + phoneFormatLength10.Substring(8, 2);
-                case "0 (555) 444 3322":
-                    return "0 (" + phoneFormatLength10.Substring(0, 3) + ") " + phoneFormatLength10.Substring(3, 3) + " " + phoneFormatLength10.Substring(6, 4);
-                case "0 555 444 33 22":
-                    return "0 " + phoneFormatLength10.Substring(0, 3) + " " + phoneFormatLength10.Substring(3, 3) + " " + phoneFormatLength10.Substring(6, 2) + " " + phoneFormatLength10.Substring(8, 2);
-                case "0 555 444 3322":
-                    return "0 " + phoneFormatLength10.Substring(0, 3) + " " + phoneFormatLength10.Substring(3, 3) + " " + phoneFormatLength10.Substring(6, 4);
-                case "05554443322":
-                    return "0" + phoneFormatLength10;
-                case "5554443322":
-                    return phoneFormatLength10;
-                case "90 (555) 444 33 33":
-                    return "90 (" + phoneFormatLength10.Substring(0, 3) + ") " + phoneFormatLength10.Substring(3, 3) + " " + phoneFormatLength10.Substring(6, 2) + " " + phoneFormatLength10.Substring(8, 2);
-                case "90 (555) 444 3333":
-                    return "90 (" + phoneFormatLength10.Substring(0, 3) + ") " + phoneFormatLength10.Substring(3, 3) + " " + phoneFormatLength10.Substring(6, 4);
-                default:
-                    return phoneFormatLength10;
+                "+90 (555) 444 33 33" => $"+90 ({formattedPhone[..3]}) {formattedPhone[3..6]} {formattedPhone[6..8]} {formattedPhone[8..]}",
+                "+90 (555) 444 3333" => $"+90 ({formattedPhone[..3]}) {formattedPhone[3..6]} {formattedPhone[6..]}",
+                "0 (555) 444 33 22" => $"0 ({formattedPhone[..3]}) {formattedPhone[3..6]} {formattedPhone[6..8]} {formattedPhone[8..]}",
+                "0 (555) 444 3322" => $"0 ({formattedPhone[..3]}) {formattedPhone[3..6]} {formattedPhone[6..]}",
+                "05554443322" => $"0{formattedPhone}",
+                _ => formattedPhone
+            };
+        }
+
+        public static bool IsEmpty(this string value) => string.IsNullOrWhiteSpace(value);
+
+        public static bool AnyUpperChar(this string value) => value.Any(char.IsUpper);
+
+        public static bool AnyLowerChar(this string value) => value.Any(char.IsLower);
+
+        public static bool AnyDigitChar(this string value) => value.Any(char.IsDigit);
+
+        public static bool AnySpecialChar(this string value) => value.Any(char.IsPunctuation);
+
+        public static string RemoveSpecialCharacters(this string value) => Regex.Replace(value, @"[^a-zA-Z0-9]", "");
+
+        public static string ToSnakeCase(this string value)
+        {
+            if (string.IsNullOrEmpty(value))
+                return value;
+
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in value)
+            {
+                if (char.IsUpper(c) && sb.Length > 0)
+                    sb.Append('_');
+                sb.Append(char.ToLower(c));
+            }
+            return sb.ToString();
+        }
+
+        public static T GetEnumValueFromDescription<T>(this string description) where T : Enum
+        {
+            foreach (var field in typeof(T).GetFields())
+            {
+                var attribute = field.GetCustomAttribute<DescriptionAttribute>();
+                if (attribute?.Description == description)
+                    return (T)field.GetValue(null);
+            }
+            throw new ArgumentException($"No enum value found for description '{description}'");
+        }
+
+        public static bool IsBase64String(this string base64)
+        {
+            if (string.IsNullOrWhiteSpace(base64) || base64.Length % 4 != 0 || base64.Contains(' ') || base64.Contains('\t') || base64.Contains('\r') || base64.Contains('\n'))
+                return false;
+
+            try
+            {
+                Convert.FromBase64String(base64);
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
 
-        public static string ToHtmlTable<T>(this List<T> entities, string cssId = null, string cssClass = null)
+        public static bool ContainsTurkishCharacters(this string value) =>
+            value.Any(c => "çÇğĞıİöÖşŞüÜ".Contains(c));
+
+        public static string ReplaceTurkishCharacters(this string value)
         {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append("<table id='" + (string.IsNullOrWhiteSpace(cssId) ? "tableData" : cssId) + "' class='" + (string.IsNullOrWhiteSpace(cssClass) ? "table table-hover" : cssClass) + "'>");
-            stringBuilder.Append("<thead>");
-            stringBuilder.Append("<tr>");
-            Type type = typeof(T);
-            foreach (PropertyInfo property in type.GetProperties())
+            Dictionary<char, char> turkishChars = new Dictionary<char, char>
             {
-                if (property.CanRead && property.CanWrite && TypeDescriptor.GetConverter(property.PropertyType).CanConvertFrom(typeof(string)))
-                {
-                    object[] customAttributes = property.GetCustomAttributes(typeof(HtmlTableColumnAttribute), false);
-                    string str = customAttributes == null || customAttributes.Length == 0 ? property.Name : (customAttributes[0] as HtmlTableColumnAttribute).PropertyName;
-                    stringBuilder.Append("<th>" + str + "</th>");
-                }
-            }
-            stringBuilder.Append("</tr>");
-            stringBuilder.Append("</thead>");
-            stringBuilder.Append("<tbody>");
-            foreach (T entity in entities)
+                {'ç', 'c'}, {'Ç', 'C'},
+                {'ğ', 'g'}, {'Ğ', 'G'},
+                {'ı', 'i'}, {'İ', 'I'},
+                {'ö', 'o'}, {'Ö', 'O'},
+                {'ş', 's'}, {'Ş', 'S'},
+                {'ü', 'u'}, {'Ü', 'U'}
+            };
+
+            StringBuilder sb = new StringBuilder(value.Length);
+            foreach (char c in value)
             {
-                stringBuilder.Append("<tr>");
-                foreach (PropertyInfo property in type.GetProperties())
-                {
-                    if (property.CanRead && property.CanWrite && TypeDescriptor.GetConverter(property.PropertyType).CanConvertFrom(typeof(string)))
-                    {
-                        object obj = property.GetValue((object)entity, (object[])null);
-                        stringBuilder.Append(string.Format("<td>{0}</td>", obj));
-                    }
-                }
-                stringBuilder.Append("</tr>");
+                sb.Append(turkishChars.TryGetValue(c, out char replacement) ? replacement : c);
             }
-            stringBuilder.Append("</tbody>");
-            stringBuilder.Append("</table>");
-            return (string)null;
+            return sb.ToString();
         }
 
-        public static string ToString(this bool value, string correct, string wrong) => !value ? wrong : correct;
-
-        public static string ToStringJoin<T>(this IEnumerable<T> list, string separator) => list == null || !list.Any<T>() ? "" : string.Join<T>(separator, list);
-
-        public static string TrimWithNullCheck(this string value) => string.IsNullOrWhiteSpace(value) ? (string)null : value.Trim();
-
-        public static List<string> SplitWithNullCheck(this string value, char separator) => string.IsNullOrWhiteSpace(value) ? new List<string>() : ((IEnumerable<string>)value.Split(separator)).ToList<string>();
-
-        public static string ReplaceWithNullCheck(this string value, string oldVal, string newVal) => string.IsNullOrWhiteSpace(value) ? (string)null : value.Replace(oldVal, newVal);
-
-        public static string RemoveEnd(this string value, int length) => string.IsNullOrWhiteSpace(value) || value.Length <= length ? (string)null : value.Substring(0, value.Length - length);
-
-        public static string RemoveStart(this string value, int length) => string.IsNullOrWhiteSpace(value) || value.Length <= length ? (string)null : value.Substring(length);
-
-        public static string Remove(this string value, params string[] arg)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                return (string)null;
-            foreach (string oldValue in arg)
-                value = value.Replace(oldValue, "");
-            return value;
-        }
-
-        public static byte[] ToBytes(this string value) => Encoding.UTF8.GetBytes(value);
-
-        public static string ToCapitalize(this string value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-                return (string)null;
-            return value.Length <= 1 ? value.ToUpper() : value.Substring(0, 1).ToUpper() + value.Substring(1).ToLower();
-        }
-
-        public static string ToCapitalize(this string value, char separator) => string.IsNullOrWhiteSpace(value) ? (string)null : ((IEnumerable<string>)value.Split(separator)).Select<string, string>((Func<string, string>)(s => s.ToCapitalize())).ToStringJoin<string>(" ");
-
-        public static bool IsNullOrWhiteSpace(this string value) => string.IsNullOrWhiteSpace(value);
-
-        public static bool HasValue(this string value) => !value.IsNullOrWhiteSpace();
+        public static string ReverseString(this string value) => new string(value.Reverse().ToArray());
     }
 }
