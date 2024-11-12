@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Project was exported from assembly: C:\Users\Musa Duman\.nuget\packages\basic.extensions\22.3.29.850\lib\net5.0\BasicExtensions.dll-->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FD6E0691-5E76-4803-A193-79D1E8B8DBEA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>BasicExtensions</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <ApplicationVersion>22.3.29.850</ApplicationVersion>
+    <FileAlignment>512</FileAlignment>
+    <RootNamespace>BasicExtensions</RootNamespace>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json" />
+    <Reference Include="NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>packages\NLog.5.1.1\lib\net46\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections" />
+    <Reference Include="System.ComponentModel.TypeConverter" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data.Common" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.FileSystem" />
+    <Reference Include="System.Linq" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Security.Cryptography.Algorithms" />
+    <Reference Include="System.Security.Cryptography.Csp" />
+    <Reference Include="System.Security.Cryptography.Primitives" />
+    <Reference Include="System.Text.RegularExpressions" />
+    <Reference Include="System.Threading.Thread" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.ReaderWriter" />
+    <Reference Include="System.Xml.XmlSerializer" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CollectionExtensions.cs" />
+    <Compile Include="ConfigurationExtensions.cs" />
+    <Compile Include="DataExtensions.cs" />
+    <Compile Include="DateExtensions.cs" />
+    <Compile Include="EncryptionExtensions.cs" />
+    <Compile Include="FileExtensions.cs" />
+    <Compile Include="MsSqlExtensions.cs" />
+    <Compile Include="NLogExtensions.cs" />
+    <Compile Include="NumberExtensitons.cs" />
+    <Compile Include="StringExtensions.cs" />
+    <Compile Include="ThreadExtensions.cs" />
+    <Compile Include="SettingExtensions\ISetting.cs" />
+    <Compile Include="SettingExtensions\KeyValueSettingConverter.cs" />
+    <Compile Include="SettingExtensions\Attributes\ListAttribute.cs" />
+    <Compile Include="SettingExtensions\Attributes\ObjectAttribute.cs" />
+    <Compile Include="SettingExtensions\Attributes\ValueAttribute.cs" />
+    <Compile Include="Models\DatetimeFormat.cs" />
+    <Compile Include="Models\ListItem.cs" />
+    <Compile Include="Models\PhoneFormat.cs" />
+    <Compile Include="Attribute\ColumnLengthAttribute.cs" />
+    <Compile Include="Attribute\HtmlTableColumnAttribute.cs" />
+    <Compile Include="Attribute\IgnoreColumnAttribute.cs" />
+    <Compile Include="Attribute\RequiredColumnAttribute.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
