@@ -8,23 +8,23 @@ namespace BasicExtensions
 {
     public static class CollectionExtensions
     {
-        //public static List<T> ToList<T>(this DataSet ds) => ds.Tables[typeof(T).Name].ToList<T>();
+        public static List<T> ToList<T>(this DataSet ds) => ds.Tables[typeof(T).Name].ToList<T>();
 
-        //public static List<T> ToList<T>(this DataTable dt)
-        //{
-        //    List<T> list = new List<T>();
-        //    foreach (DataRow row in (InternalDataCollectionBase)dt.Rows)
-        //    {
-        //        T instance = Activator.CreateInstance<T>();
-        //        foreach (PropertyInfo property in typeof(T).GetProperties())
-        //        {
-        //            if (dt.Columns.Contains(property.Name) && row[property.Name] != DBNull.Value)
-        //                property.SetValue((object)instance, row[property.Name], (object[])null);
-        //        }
-        //        list.Add(instance);
-        //    }
-        //    return list;
-        //}
+        public static List<T> ToList<T>(this DataTable dt)
+        {
+            List<T> list = new List<T>();
+            foreach (DataRow row in (InternalDataCollectionBase)dt.Rows)
+            {
+                T instance = Activator.CreateInstance<T>();
+                foreach (PropertyInfo property in typeof(T).GetProperties())
+                {
+                    if (dt.Columns.Contains(property.Name) && row[property.Name] != DBNull.Value)
+                        property.SetValue((object)instance, row[property.Name], (object[])null);
+                }
+                list.Add(instance);
+            }
+            return list;
+        }
 
         public static List<T> CopyList<T>(this List<T> entities)
         {
