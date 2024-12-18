@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>
+			net5.0;
+			net6.0;
+			net7.0;
+			net8.0;
+			net9.0;
+			netstandard2.0;
+			netstandard2.1;
+			net452;
+			net45;
+			net46;
+			net462;
+			net47;
+			net472;
+			net48;
+			netcoreapp3.0;
+			netcoreapp3.1;
+			netcoreapp2.0;
+			netcoreapp2.1
+		</TargetFrameworks>
+
+		<PreserveCompilationContext>true</PreserveCompilationContext>
+		<AssemblyVersion>22.3.29.0850</AssemblyVersion>
+		<FileVersion>22.3.29.0850</FileVersion>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Version>$(AssemblyVersion)</Version>
+		<Authors>Musa Duman, Oğuzhan ÖZBEK, Nebil Yazılım</Authors>
+		<Product>BasicExtensions</Product>
+		<Description>It includes basic extensions to make programming easier.</Description>
+		<PackageIcon>ico.png</PackageIcon>
+		<PackageIconUrl />
+		<Copyright></Copyright>
+		<PackageId>Basic.Extensions</PackageId>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Properties\**" />
+	  <EmbeddedResource Remove="Properties\**" />
+	  <None Remove="Properties\**" />
+	  <None Include="Images\ico.png">
+	    <Pack>True</Pack>
+	    <PackagePath></PackagePath>
+	  </None>
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	  <PackageReference Include="NLog" Version="4.7.12" />
+	</ItemGroup>
+
+</Project>

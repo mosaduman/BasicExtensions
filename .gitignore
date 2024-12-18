@@ -1,0 +1,57 @@
+# Visual Studio kullanýcý ayarlarý
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code ayarlarý
+.vscode/
+
+# Build dosyalarý
+bin/
+obj/
+debug/
+release/
+
+# Paket dosyalarý
+packages/
+*.nupkg
+*.snupkg
+
+# Yayýnlama dosyalarý
+*.Publish.xml
+publish/
+
+# Geçici dosyalar
+*.tmp
+*.temp
+*.log
+*.cache
+
+# IDE tarayýcý dosyalarý
+*.tlog
+*.vspscc
+*.vssscc
+.vs/
+
+# Kullanýcý yapýlandýrmalarý
+launchSettings.json
+
+# Resharper dosyalarý
+_ReSharper*/
+*.DotSettings.user
+
+# Rider
+.idea/
+
+# Tekrar üretilen dosyalar
+*.dll
+*.exe
+*.pdb
+*.obj
+*.bak
+*.swp
+
+# Geriye dönük destek
+*.sln.ide
+Thumbs.db
